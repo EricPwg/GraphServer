@@ -38,5 +38,5 @@ def get_database(database_id):
 
     return jsonify(res)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+def data_server():
+    app.run(debug=False)

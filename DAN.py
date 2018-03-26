@@ -12,7 +12,7 @@ class DAN:
 
     def control_channel(self):
         while True:
-            time.sleep(2)
+            time.sleep(1)
             try:
                 ch = self.csmapi.pull(self.mac, '__Ctl_O__')
                 if ch != []:
@@ -29,11 +29,11 @@ class DAN:
                                 self.selectedDF.append(self.profile['df_list'][index])
                             index=index+1
             except Exception as e:
+                print('problem func: control_channel')
                 print (e)
 
     def get_mac_addr(self):
         mac = uuid.uuid4().hex
-        # mac = ''.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
         return mac
 
     def register_device(self):
@@ -45,7 +45,8 @@ class DAN:
             self.timestamp[i] = ''
 
         print('IoTtalk Server = {}'.format(self.csmapi.ENDPOINT))
-        if self.csmapi.register(self.mac, self.profile):
+        try:
+            self.csmapi.register(self.mac, self.profile)
             print ('This device has successfully registered.')
             print ('Device name = ' + self.profile['d_name'])
 
@@ -54,8 +55,9 @@ class DAN:
             thx.start()
             
             return True
-        else:
-            print ('Registration failed.')
+        except Exception as e:
+            print ('problem func: register_device')
+            print(e)
             return False
 
     def device_registration_with_retry(self, profile=None, IP=None, addr=None):
@@ -68,26 +70,25 @@ class DAN:
         self.csmapi.ENDPOINT = 'http://' + IP + ':9999'
         success = False
         while not success:
-            try:
-                self.register_device()
-                success = True
-            except Exception as e:
-                print ('Attach failed: '),
-                print (e)
+            success = self.register_device()
             time.sleep(1)
 
     def pull(self, FEATURE_NAME):
+        try:
+            data = self.csmapi.pull(self.mac, FEATURE_NAME) if self.state == 'RESUME' else []
 
-        data = self.csmapi.pull(self.mac, FEATURE_NAME) if self.state == 'RESUME' else []
-
-        if data != []:
-            if self.timestamp[FEATURE_NAME] == data[0][0]:
+            if data != []:
+                if self.timestamp[FEATURE_NAME] == data[0][0]:
+                    return None
+                self.timestamp[FEATURE_NAME] = data[0][0]
+                if data[0][1] != []:
+                    return (data[0][0], data[0][1])
+                else: return None
+            else:
                 return None
-            self.timestamp[FEATURE_NAME] = data[0][0]
-            if data[0][1] != []:
-                return (data[0][0], data[0][1])
-            else: return None
-        else:
+        except Exception as e:
+            print ('problem func: pull')
+            print(e)
             return None
 
     def push(self, FEATURE_NAME, *data):
@@ -98,20 +99,24 @@ class DAN:
     def get_alias(self, FEATURE_NAME):
         try:
             alias = self.csmapi.get_alias(self.mac, FEATURE_NAME)
+            return alias
         except Exception as e:
+            print ('problem func: get_alias')
             print (e)
             return None
-        else:
-            return alias
 
     def set_alias(self, FEATURE_NAME, alias):
         try:
             alias = self.csmapi.set_alias(self.mac, FEATURE_NAME, alias)
+            return alias
         except Exception as e:
+            print ('problem func: set_alias')
             print (e)
-            return None
-        else:
-            return alias        
+            return None        
         
     def deregister(self):
-        return self.csmapi.deregister(self.mac)
+        try:
+            self.csmapi.deregister(self.mac)
+        except Exception as e:
+            print ('problem func: deregister')
+            print (e)

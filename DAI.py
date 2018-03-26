@@ -18,19 +18,14 @@ def dai():
 
     try:
         while True:
-            try:
-                #Pull data
-                for df in dan.selectedDF:
-                    data = dan.pull(df)
-                    if data != None:
-                        timestamp = data[0]
-                        value = float(data[1][0])
-                        with pny.db_session:
-                            re = globals()[df](timestamp = timestamp, value = value)
-
-            except requests.exceptions.ConnectionError:
-                print("requests.exceptions.ConnectionError")
-                dan.device_registration_with_retry(profile, ServerIP, Reg_addr)
-            time.sleep(2)
+            #Pull data
+            for df in dan.selectedDF:
+                data = dan.pull(df)
+                if data != None:
+                    timestamp = data[0]
+                    value = float(data[1][0])
+                    with pny.db_session:
+                        re = globals()[df](timestamp = timestamp, value = value)
+            time.sleep(1)
     except KeyboardInterrupt:
         dan.deregister()

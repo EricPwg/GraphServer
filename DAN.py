@@ -1,4 +1,5 @@
 import requests, time, CSMAPI, random, threading, socket, uuid
+from datetime import datetime
 
 class DAN:
     def __init__(self):
@@ -29,7 +30,7 @@ class DAN:
                                 self.selectedDF.append(self.profile['df_list'][index])
                             index=index+1
             except Exception as e:
-                print('problem func: control_channel')
+                print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'problem func: control_channel')
                 print (e)
 
     def get_mac_addr(self):
@@ -87,7 +88,7 @@ class DAN:
             else:
                 return None
         except Exception as e:
-            print ('problem func: pull')
+            print (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'problem func: pull')
             print(e)
             return None
 

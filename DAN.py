@@ -121,6 +121,22 @@ def pull(FEATURE_NAME):
     else:
         return None
 
+def pull_with_timestamp(FEATURE_NAME):
+    global timestamp
+
+    if state == 'RESUME': data = csmapi.pull(MAC,FEATURE_NAME)
+    else: data = []
+        
+    if data != []:
+        if timestamp[FEATURE_NAME] == data[0][0]:
+            return None
+        timestamp[FEATURE_NAME] = data[0][0]
+        if data[0][1] != []:
+            return (timestamp[FEATURE_NAME], data[0][1])
+        else: return None
+    else:
+        return None
+
 def push(FEATURE_NAME, *data):
     if state == 'RESUME':
         return csmapi.push(MAC, FEATURE_NAME, list(data))

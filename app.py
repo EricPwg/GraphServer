@@ -1,13 +1,16 @@
 import os
 import pony.orm as pny
+
+from dateutil import parser
+
 from flask import (Flask, jsonify, render_template,
                    request, send_from_directory)
-from dateutil import parser
 
 import models
 
+from config import QUERY_LIMIT
+
 app = Flask(__name__)
-default_limit = 100
 
 
 @app.errorhandler(404)
@@ -38,7 +41,7 @@ def get_databases():
 
     start = request.args.get('start')
     end = request.args.get('end')
-    limit = int(request.args.get('limit', default_limit))
+    limit = int(request.args.get('limit', QUERY_LIMIT))
 
     if start and end:
         start = parser.parse(start)
@@ -67,7 +70,7 @@ def get_database(tablename):
 
     start = request.args.get('start')
     end = request.args.get('end')
-    limit = int(request.args.get('limit', default_limit))
+    limit = int(request.args.get('limit', QUERY_LIMIT))
 
     if start and end:
         start = parser.parse(start)

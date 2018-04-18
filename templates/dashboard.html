@@ -1,10 +1,10 @@
 {% extends 'base/base.html' %} 
 
-{% macro tab(name, id, is_active=False) -%}
+{% macro tab_title(name, id, is_active=False) -%}
 <li{% if is_active %} class="active"{% endif %}><a href="#{{id}}" data-toggle="tab">{{name}}</a></li>
 {%- endmacro %}
 
-{% macro box(name, icon, color, value='') -%}
+{% macro content_box(place, sensor, name, icon, color, value='') -%}
 <div class="col-sm-2 col-xs-3">
   <!-- small box -->
   <div class="small-box {{color}}">
@@ -15,9 +15,35 @@
     <div class="icon">
       <i class="ion {{icon}}"></i>
     </div>
-    <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+    <a href="/history#{{place}},{{sensor}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
   </div>
 </div>
+{%- endmacro %}
+
+{% macro tab_content(place, is_active=False) -%}
+    <div class="tab-pane{% if is_active %} active{% endif %}" id="{{place}}">
+      <div class="row">
+        {{ content_box(place, 'AtPressure', '大氣壓力 (Pa)', 'ion-android-cloud', 'bg-aqua', 1023)}}
+        {{ content_box(place, 'CO2', '二氧化碳 (ppm)', 'ion-android-car', 'bg-aqua', 300)}}
+        {{ content_box(place, 'Temperature', '溫度 (℃)', 'ion-thermometer', 'bg-aqua', 24)}}
+        {{ content_box(place, 'Humidity', '濕度 (%)', 'ion-waterdrop', 'bg-aqua', 47)}}
+        {{ content_box(place, 'WindSpeed', '風速 (m/s)', 'ion-paper-airplane', 'bg-aqua', 4.3)}}
+        {{ content_box(place, 'RainMeter', '雨量 (mm)', 'ion-ios-rainy', 'bg-aqua', 11)}}
+        {{ content_box(place, 'Bugs', '蟲數 (隻)', 'ion-bug', 'bg-green', 3)}}
+        {{ content_box(place, 'UV1', 'UV - 1', 'ion-android-sunny', 'bg-purple', 2)}}
+        {{ content_box(place, 'UV2', 'UV - 2', 'ion-android-sunny', 'bg-purple', 3)}}
+        {{ content_box(place, 'UV3', 'UV - 3', 'ion-android-sunny', 'bg-purple', 2)}}
+        {{ content_box(place, 'Moisture1', '土壤濕度 - A (%)', 'ion-waterdrop', 'bg-orange', 60)}}
+        {{ content_box(place, 'PH1', '土壤酸鹼 - A (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.7)}}
+        {{ content_box(place, 'Moisture2', '土壤濕度 - B (%)', 'ion-waterdrop', 'bg-orange', 57)}}
+        {{ content_box(place, 'PH2', '土壤酸鹼 - B (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 7.1)}}
+        {{ content_box(place, 'Moisture3', '土壤濕度 - C (%)', 'ion-waterdrop', 'bg-orange', 43)}}
+        {{ content_box(place, 'PH3', '土壤酸鹼 - C (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 5.9)}}
+        {{ content_box(place, 'Moisture4', '土壤濕度 - D (%)', 'ion-waterdrop', 'bg-orange', 62)}}
+        {{ content_box(place, 'PH4', '土壤酸鹼 - D (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.3)}}
+      </div>
+      <!-- /.row -->
+    </div>
 {%- endmacro %}
 
 {% block page_title %} 即時資料監控 {% endblock %}
@@ -25,83 +51,17 @@
 {% block page_content %}
 <div class="nav-tabs-custom">
   <ul class="nav nav-tabs">
-    {{ tab('寶山場域 一', 'bao_1', True)}}
-    {{ tab('寶山場域 二', 'bao_2')}}
-    {{ tab('寶山場域 三', 'bao_3')}}
-    {{ tab('五峰場域 一', 'wu_1')}}
-    {{ tab('五峰場域 二', 'wu_2')}}
-    {{ tab('五峰場域 三', 'wu_3')}}
+    {{ tab_title('寶山場域 一', 'bao_1', True)}}
+    {{ tab_title('寶山場域 二', 'bao_2')}}
+    {{ tab_title('寶山場域 三', 'bao_3')}}
+    {{ tab_title('五峰場域 一', 'wu_1')}}
+    {{ tab_title('五峰場域 二', 'wu_2')}}
+    {{ tab_title('五峰場域 三', 'wu_3')}}
   </ul>
   <div class="tab-content">
-    <div class="tab-pane active" id="bao_1">
-      <div class="row">
-        {{ box('大氣壓力 (Pa)', 'ion-android-cloud', 'bg-aqua', 1023)}}
-        {{ box('二氧化碳 (ppm)', 'ion-android-car', 'bg-aqua', 300)}}
-        {{ box('溫度 (℃)', 'ion-thermometer', 'bg-aqua', 24)}}
-        {{ box('濕度 (%)', 'ion-waterdrop', 'bg-aqua', 47)}}
-        {{ box('風速 (m/s)', 'ion-paper-airplane', 'bg-aqua', 4.3)}}
-        {{ box('雨量 (mm)', 'ion-ios-rainy', 'bg-aqua', 11)}}
-        {{ box('蟲數 (隻)', 'ion-bug', 'bg-green', 3)}}
-        {{ box('UV - A', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ box('UV - B', 'ion-android-sunny', 'bg-purple', 3)}}
-        {{ box('UV - C', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ box('土壤濕度 - A (%)', 'ion-waterdrop', 'bg-orange', 60)}}
-        {{ box('土壤酸鹼 - A (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.7)}}
-        {{ box('土壤濕度 - B (%)', 'ion-waterdrop', 'bg-orange', 57)}}
-        {{ box('土壤酸鹼 - B (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 7.1)}}
-        {{ box('土壤濕度 - C (%)', 'ion-waterdrop', 'bg-orange', 43)}}
-        {{ box('土壤酸鹼 - C (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 5.9)}}
-        {{ box('土壤濕度 - D (%)', 'ion-waterdrop', 'bg-orange', 62)}}
-        {{ box('土壤酸鹼 - D (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.3)}}
-      </div>
-      <!-- /.row -->
-    </div>
-    <div class="tab-pane" id="bao_2">
-      <div class="row">
-        {{ box('大氣壓力 (Pa)', 'ion-android-cloud', 'bg-aqua', 1023)}}
-        {{ box('二氧化碳 (ppm)', 'ion-android-car', 'bg-aqua', 300)}}
-        {{ box('溫度 (℃)', 'ion-thermometer', 'bg-aqua', 24)}}
-        {{ box('濕度 (%)', 'ion-waterdrop', 'bg-aqua', 47)}}
-        {{ box('風速 (m/s)', 'ion-paper-airplane', 'bg-aqua', 4.3)}}
-        {{ box('雨量 (mm)', 'ion-ios-rainy', 'bg-aqua', 11)}}
-        {{ box('蟲數 (隻)', 'ion-bug', 'bg-green', 3)}}
-        {{ box('UV - A', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ box('UV - B', 'ion-android-sunny', 'bg-purple', 3)}}
-        {{ box('UV - C', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ box('土壤濕度 - A (%)', 'ion-waterdrop', 'bg-orange', 60)}}
-        {{ box('土壤酸鹼 - A (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.7)}}
-        {{ box('土壤濕度 - B (%)', 'ion-waterdrop', 'bg-orange', 57)}}
-        {{ box('土壤酸鹼 - B (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 7.1)}}
-        {{ box('土壤濕度 - C (%)', 'ion-waterdrop', 'bg-orange', 43)}}
-        {{ box('土壤酸鹼 - C (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 5.9)}}
-        {{ box('土壤濕度 - D (%)', 'ion-waterdrop', 'bg-orange', 62)}}
-        {{ box('土壤酸鹼 - D (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.3)}}
-      </div>
-      <!-- /.row -->
-    </div>
-    <div class="tab-pane" id="bao_3">
-      <div class="row">
-        {{ box('大氣壓力 (Pa)', 'ion-android-cloud', 'bg-aqua', 1023)}}
-        {{ box('二氧化碳 (ppm)', 'ion-android-car', 'bg-aqua', 300)}}
-        {{ box('溫度 (℃)', 'ion-thermometer', 'bg-aqua', 24)}}
-        {{ box('濕度 (%)', 'ion-waterdrop', 'bg-aqua', 47)}}
-        {{ box('風速 (m/s)', 'ion-paper-airplane', 'bg-aqua', 4.3)}}
-        {{ box('雨量 (mm)', 'ion-ios-rainy', 'bg-aqua', 11)}}
-        {{ box('蟲數 (隻)', 'ion-bug', 'bg-green', 3)}}
-        {{ box('UV - A', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ box('UV - B', 'ion-android-sunny', 'bg-purple', 3)}}
-        {{ box('UV - C', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ box('土壤濕度 - A (%)', 'ion-waterdrop', 'bg-orange', 60)}}
-        {{ box('土壤酸鹼 - A (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.7)}}
-        {{ box('土壤濕度 - B (%)', 'ion-waterdrop', 'bg-orange', 57)}}
-        {{ box('土壤酸鹼 - B (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 7.1)}}
-        {{ box('土壤濕度 - C (%)', 'ion-waterdrop', 'bg-orange', 43)}}
-        {{ box('土壤酸鹼 - C (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 5.9)}}
-        {{ box('土壤濕度 - D (%)', 'ion-waterdrop', 'bg-orange', 62)}}
-        {{ box('土壤酸鹼 - D (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.3)}}
-      </div>
-      <!-- /.row -->
-    </div>
+    {{ tab_content('bao_1', True) }}
+    {{ tab_content('bao_2') }}
+    {{ tab_content('bao_3') }}
     <div class="tab-pane" id="wu_1">
       <h2>Progressing...</h2>
     </div>

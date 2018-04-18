@@ -1,0 +1,175 @@
+{% extends 'base/base.html' %} 
+
+{% block page_title %} 歷史資料查詢 {% endblock %}
+
+{% block page_content %}
+<div class="row">
+	<div class="col-sm-6 col-xs-12">
+		  <select id="place" style="width:100%">
+		    <option value="bao_1">寶山場域 一</option>
+		    <option value="bao_2">寶山場域 二</option>
+		    <option value="bao_3">寶山場域 三</option>
+		    <option value="wu_1">五峰場域 一</option>
+		    <option value="wu_2">五峰場域 二</option>
+		    <option value="wu_3	">五峰場域 三</option>
+		  </select>
+	</div>
+	<div class="col-sm-6 col-xs-12">
+		  <select id="sensor" style="width:100%">
+		    <option value="pressure">大氣壓力</option>
+		    <option value="co2">二氧化碳</option>
+		    <option value="temperature">溫度</option>
+		    <option value="humidity">濕度</option>
+		    <option value="wind_speed">風速</option>
+		    <option value="precipitation">雨量</option>
+		    <option value="bugs">蟲數</option>
+		    <option value="uv_a">UV - A</option>
+		    <option value="uv_b">UV - B</option>
+		    <option value="uv_c">UV - C</option>
+		    <option value="soil_humidity_a">土壤濕度 - A</option>
+		    <option value="soil_ph_a">土壤酸鹼 - A</option>
+		    <option value="soil_humidity_b">土壤濕度 - B</option>
+		    <option value="soil_ph_b">土壤酸鹼 - B</option>
+		    <option value="soil_humidity_c">土壤濕度 - C</option>
+		    <option value="soil_ph_c">土壤酸鹼 - C</option>
+		    <option value="soil_humidity_d">土壤濕度 - D</option>
+		    <option value="soil_ph_d">土壤酸鹼 - D</option>
+		  </select>
+	</div>
+	<hr>
+	<div class="col-xs-12">
+          <!-- interactive chart -->
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <i class="fa fa-bar-chart-o"></i>
+
+              <h3 class="box-title">歷史圖表</h3>
+
+              <div class="box-tools pull-right">
+                Real time
+                <div class="btn-group" id="realtime" data-toggle="btn-toggle">
+                  <button type="button" class="btn btn-default btn-xs active" data-toggle="on">On</button>
+                  <button type="button" class="btn btn-default btn-xs" data-toggle="off">Off</button>
+                </div>
+              </div>
+            </div>
+            <div class="box-body">
+              <div id="interactive" style="height: 300px;"></div>
+            </div>
+            <!-- /.box-body-->
+          </div>
+          <!-- /.box -->
+
+        </div>
+        <!-- /.col -->
+</div>
+
+{% endblock %}
+
+{% block page_script %}
+<!-- Page script -->
+<script>
+	var originHash;
+  $(function () {
+  	$(document).on('change', '#place', function(){console.log('place', this.value);});
+  	$(document).on('change', '#sensor', function(){console.log('sensor', this.value);});
+
+  	originHash = window.location.hash;
+  	console.log(originHash);
+
+		$(window).on('hashchange', function (a) {
+		  if (window.location.hash != originHash) {
+		    window.location.hash = originHash;
+		  }
+	  })
+
+    /*
+     * Flot Interactive Chart
+     * -----------------------
+     */
+    // We use an inline data source in the example, usually data would
+    // be fetched from a server
+    var data = [], totalPoints = 100
+
+    function getRandomData() {
+
+      if (data.length > 0)
+        data = data.slice(1)
+
+      // Do a random walk
+      while (data.length < totalPoints) {
+
+        var prev = data.length > 0 ? data[data.length - 1] : 50,
+            y    = prev + Math.random() * 10 - 5
+
+        if (y < 0) {
+          y = 0
+        } else if (y > 100) {
+          y = 100
+        }
+
+        data.push(y)
+      }
+
+      // Zip the generated y values with the x values
+      var res = []
+      for (var i = 0; i < data.length; ++i) {
+        res.push([i, data[i]])
+      }
+
+      return res
+    }
+
+    var interactive_plot = $.plot('#interactive', [getRandomData()], {
+      grid  : {
+        borderColor: '#f3f3f3',
+        borderWidth: 1,
+        tickColor  : '#f3f3f3'
+      },
+      series: {
+        shadowSize: 0, // Drawing is faster without shadows
+        color     : '#3c8dbc'
+      },
+      lines : {
+        fill : true, //Converts the line chart to area chart
+        color: '#3c8dbc'
+      },
+      yaxis : {
+        min : 0,
+        max : 200,
+        show: true
+      },
+      xaxis : {
+        show: true
+      }
+    })
+
+    var updateInterval = 500 //Fetch data ever x milliseconds
+    var realtime       = 'on' //If == to on then fetch data every x seconds. else stop fetching
+    function update() {
+
+      interactive_plot.setData([getRandomData()])
+
+      // Since the axes don't change, we don't need to call plot.setupGrid()
+      interactive_plot.draw()
+      if (realtime === 'on')
+        setTimeout(update, updateInterval)
+    }
+
+    //INITIALIZE REALTIME DATA FETCHING
+    if (realtime === 'on') {
+      update()
+    }
+    //REALTIME TOGGLE
+    $('#realtime .btn').click(function () {
+      if ($(this).data('toggle') === 'on') {
+        realtime = 'on'
+      }
+      else {
+        realtime = 'off'
+      }
+      update()
+    })
+	});
+</script>
+{% endblock %}

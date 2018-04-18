@@ -10,8 +10,8 @@ profile = {
 }
 mac_addr = 'C860008BD249'
 
-state = 'SUSPEND'     #for control channel
-#state = 'RESUME'
+#state = 'SUSPEND'     #for control channel
+state = 'RESUME'
 
 SelectedDF = []
 control_channel_timestamp = None

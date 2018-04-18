@@ -9,7 +9,7 @@
   <!-- small box -->
   <div class="small-box {{color}}">
     <div class="inner">
-      <h3>{{value}}</h3>
+      <h3 id="{{place}}_{{sensor}}">{{value}}</h3>
       <p>{{name}}</p>
     </div>
     <div class="icon">
@@ -79,7 +79,23 @@
 <!-- Page script -->
 <script>
   $(function () {
+    function update() {
+      console.log('update');
+      let ajax_obj = $.ajax({
+        url: '/datas?limit=1',
+        type:'GET'
+      }).done(function(data){
+        for(key in data) {
+          if(data[key][0]) {
+            $('#bao_3_' + key).text(data[key][0][1]);
+          }
+        }
+      });
 
+      setTimeout(update, 1000);
+    }
+
+    update(); 
   })
 </script>
 {% endblock %}

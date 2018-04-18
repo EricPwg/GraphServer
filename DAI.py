@@ -46,4 +46,5 @@ def dai():
                         re = getattr(models, df.replace('-O', ''))(timestamp=timestamp, value=value)
             time.sleep(1)
     except KeyboardInterrupt:
-        DAN.deregister()
+        pass
+        # DAN.deregister()

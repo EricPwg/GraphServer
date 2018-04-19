@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %} 
 
 {% macro tab_title(name, id, is_active=False) -%}
-<li{% if is_active %} class="active"{% endif %}><a href="#{{id}}" data-toggle="tab">{{name}}</a></li>
+<li{% if is_active %} class="active"{% endif %} id="tab_{{id}}"><a href="#{{id}}" data-toggle="tab">{{name}}</a></li>
 {%- endmacro %}
 
 {% macro content_box(place, sensor, name, icon, color, value='') -%}
@@ -51,24 +51,24 @@
 {% block page_content %}
 <div class="nav-tabs-custom">
   <ul class="nav nav-tabs">
-    {{ tab_title('寶山場域 一', 'bao_1', True)}}
-    {{ tab_title('寶山場域 二', 'bao_2')}}
-    {{ tab_title('寶山場域 三', 'bao_3')}}
-    {{ tab_title('五峰場域 一', 'wu_1')}}
-    {{ tab_title('五峰場域 二', 'wu_2')}}
-    {{ tab_title('五峰場域 三', 'wu_3')}}
+    {{ tab_title('寶山場域 一', 'bao1', True)}}
+    {{ tab_title('寶山場域 二', 'bao2')}}
+    {{ tab_title('寶山場域 三', 'bao3')}}
+    {{ tab_title('五峰場域 一', 'wu1')}}
+    {{ tab_title('五峰場域 二', 'wu2')}}
+    {{ tab_title('五峰場域 三', 'wu3')}}
   </ul>
   <div class="tab-content">
-    {{ tab_content('bao_1', True) }}
-    {{ tab_content('bao_2') }}
-    {{ tab_content('bao_3') }}
-    <div class="tab-pane" id="wu_1">
+    {{ tab_content('bao1', True) }}
+    {{ tab_content('bao2') }}
+    {{ tab_content('bao3') }}
+    <div class="tab-pane" id="wu1">
       <h2>Progressing...</h2>
     </div>
-    <div class="tab-pane" id="wu_2">
+    <div class="tab-pane" id="wu2">
       <h2>Progressing...</h2>
     </div>
-    <div class="tab-pane" id="wu_3">
+    <div class="tab-pane" id="wu3">
       <h2>Progressing...</h2>
     </div>
   </div>
@@ -79,15 +79,19 @@
 <!-- Page script -->
 <script>
   $(function () {
+    let hash = window.location.hash.replace('#', '');
+    if($('#tab_' + hash).length){
+      $('#tab_' + hash).find('a').click();
+    }
+
     function update() {
-      console.log('update');
       let ajax_obj = $.ajax({
         url: '/datas?limit=1',
         type:'GET'
       }).done(function(data){
         for(key in data) {
           if(data[key][0]) {
-            $('#bao_3_' + key).text(data[key][0][1]);
+            $('#bao3_' + key).text(data[key][0][1]);
           }
         }
       });

@@ -4,40 +4,40 @@
 
 {% block page_content %}
 <div class="row">
-	<div class="col-sm-6 col-xs-12">
-		  <select id="place" style="width:100%">
-		    <option value="bao1">寶山場域 一</option>
-		    <option value="bao2">寶山場域 二</option>
-		    <option value="bao3">寶山場域 三</option>
-		    <option value="wu1">五峰場域 一</option>
-		    <option value="wu2">五峰場域 二</option>
-		    <option value="wu3	">五峰場域 三</option>
-		  </select>
-	</div>
-	<div class="col-sm-6 col-xs-12">
-		  <select id="sensor" style="width:100%">
-		    <option value="AtPressure">大氣壓力</option>
-		    <option value="CO2">二氧化碳</option>
-		    <option value="Temperature">溫度</option>
-		    <option value="Humidity">濕度</option>
-		    <option value="WindSpeed">風速</option>
-		    <option value="RainMeter">雨量</option>
-		    <option value="Bugs">蟲數</option>
-		    <option value="UV1">UV - 1</option>
-		    <option value="UV2">UV - 2</option>
-		    <option value="UV3">UV - 3</option>
-		    <option value="Moisture1">土壤濕度 - A</option>
-		    <option value="PH1">土壤酸鹼 - A</option>
-		    <option value="Moisture2">土壤濕度 - B</option>
-		    <option value="PH2">土壤酸鹼 - B</option>
-		    <option value="Moisture3">土壤濕度 - C</option>
-		    <option value="PH3">土壤酸鹼 - C</option>
-		    <option value="Moisture4">土壤濕度 - D</option>
-		    <option value="PH4">土壤酸鹼 - D</option>
-		  </select>
-	</div>
-	<hr>
-	<div class="col-xs-12">
+  <div class="col-sm-6 col-xs-12">
+      <select id="place" style="width:100%">
+        <option value="bao1">寶山場域 一</option>
+        <option value="bao2">寶山場域 二</option>
+        <option value="bao3">寶山場域 三</option>
+        <option value="wu1">五峰場域 一</option>
+        <option value="wu2">五峰場域 二</option>
+        <option value="wu3  ">五峰場域 三</option>
+      </select>
+  </div>
+  <div class="col-sm-6 col-xs-12">
+      <select id="sensor" style="width:100%">
+        <option value="AtPressure">大氣壓力</option>
+        <option value="CO2">二氧化碳</option>
+        <option value="Temperature">溫度</option>
+        <option value="Humidity">濕度</option>
+        <option value="WindSpeed">風速</option>
+        <option value="RainMeter">雨量</option>
+        <option value="Bugs">蟲數</option>
+        <option value="UV1">UV - 1</option>
+        <option value="UV2">UV - 2</option>
+        <option value="UV3">UV - 3</option>
+        <option value="Moisture1">土壤濕度 - A</option>
+        <option value="PH1">土壤酸鹼 - A</option>
+        <option value="Moisture2">土壤濕度 - B</option>
+        <option value="PH2">土壤酸鹼 - B</option>
+        <option value="Moisture3">土壤濕度 - C</option>
+        <option value="PH3">土壤酸鹼 - C</option>
+        <option value="Moisture4">土壤濕度 - D</option>
+        <option value="PH4">土壤酸鹼 - D</option>
+      </select>
+  </div>
+  <hr>
+  <div class="col-xs-12">
           <!-- interactive chart -->
           <div class="box box-primary">
             <div class="box-header with-border">
@@ -45,13 +45,13 @@
 
               <h3 class="box-title">歷史圖表</h3>
 
-              <div class="box-tools pull-right">
+              <!--<div class="box-tools pull-right">
                 Real time
                 <div class="btn-group" id="realtime" data-toggle="btn-toggle">
                   <button type="button" class="btn btn-default btn-xs active" data-toggle="on">On</button>
                   <button type="button" class="btn btn-default btn-xs" data-toggle="off">Off</button>
                 </div>
-              </div>
+              </div>-->
             </div>
             <div class="box-body">
               <div id="interactive" style="height: 300px;"></div>
@@ -70,19 +70,20 @@
 <!-- Page script -->
 <script>
   var interactive_plot = null;
+  var updateInterval = 1000 //Fetch data ever x milliseconds
   $(function () {
-  	let hash = window.location.hash.replace('#', '').split(',');
-  	if(hash[0]){
-			$('#place').val(hash[0]);
-			$('#sensor').val(hash[1]);
-		}
+    let hash = window.location.hash.replace('#', '').split(',');
+    if(hash[0]){
+      $('#place').val(hash[0]);
+      $('#sensor').val(hash[1]);
+    }
 
-  	$(document).on('change', '#place', function(){console.log('place', this.value);});
-  	$(document).on('change', '#sensor', function(){console.log('sensor', this.value);});
+    $(document).on('change', '#place', function(){console.log('place', this.value);});
+    $(document).on('change', '#sensor', function(){console.log('sensor', this.value);});
 
-		$(window).on('hashchange', function (a) {
-			console.log(window.location.hash);
-	  })
+    $(window).on('hashchange', function (a) {
+      console.log(window.location.hash);
+    })
 
     /*
      * Flot Interactive Chart
@@ -90,24 +91,7 @@
      */
     // We use an inline data source in the example, usually data would
     // be fetched from a server
-    var data = [], totalPoints = 100
-
-  function getData(place, sensor, callback) {
-    $.ajax({
-      'url': '/datas/' + sensor,
-    }).done((data) => {
-      if(callback && data && data[sensor]) {
-	let res = [];
-	data[sensor].forEach((record, idx) => {
-          res.push([idx, record[1]]);
-	});
-        callback(res);
-      }
-    })
-  }
-
-
-    interactive_plot = $.plot('#interactive', [getRandomData()], {
+    interactive_plot = $.plot('#interactive', [], {
       grid  : {
         borderColor: '#f3f3f3',
         borderWidth: 1,
@@ -122,16 +106,27 @@
         color: '#3c8dbc'
       },
       yaxis : {
-        min : 0,
-        max : 800,
         show: true
       },
       xaxis : {
-        show: true
+        show: true,
+        tickColor: 'transparent'
       }
     })
 
-    var updateInterval = 500 //Fetch data ever x milliseconds
+    function getData(place, sensor, callback) {
+      $.ajax({
+        'url': '/datas/' + sensor,
+      }).done((data) => {
+        if(callback && data && data[sensor]) {
+          callback(data[sensor]);
+        } else {
+          callback([]);
+        }
+      })
+    }
+
+    /*
     var realtime       = 'on' //If == to on then fetch data every x seconds. else stop fetching
     function update() {
 
@@ -156,15 +151,41 @@
         realtime = 'off'
       }
       update()
-    })
-  function upp() {
-    getData($('#place').val(), $('#sensor').val(), (data) => {
-      interactive_plot.setData([data]);
-      interactive_plot.draw()
-      setTimeout(upp, 1000);
-    });
-  }
-  upp();
-	});
+    })*/
+
+    function update() {
+      getData($('#place').val(), $('#sensor').val(), (data) => {
+        let res = [];
+        let max = -Infinity;
+        let min = Infinity;
+        let x_tick = [];
+        data.forEach((element, idx) => {
+          if (element[1] > max) {
+            max = element[1];
+          }
+          if (element[1] < min) {
+            min = element[1];
+          }
+          res.push([idx, element[1]]);
+          if (idx % 10 == 0) {
+            x_tick.push([idx, element[0]]);
+          }
+        })
+
+        interactive_plot.setData([res]);
+        let y_max = (Math.round(min / (10 ** (Math.log10(max) - 1))) + 1) * (10 ** (Math.log10(max) - 1));
+        let y_min = (Math.ceil(min / (10 ** (Math.log10(min) - 1))) - 1) * (10 ** (Math.log10(min) - 1));
+        console.log(x_tick);
+
+        interactive_plot.getOptions().yaxis.max = y_max;
+        interactive_plot.getOptions().yaxis.min = y_min;
+        interactive_plot.getOptions().xaxis.ticks = x_tick;
+        interactive_plot.setupGrid();
+        interactive_plot.draw();
+        setTimeout(update, updateInterval);
+      });
+    }
+    update();
+  });
 </script>
 {% endblock %}

@@ -2,8 +2,7 @@ import os
 import pony.orm as pny
 
 from dateutil import parser
-
-from flask import (Flask, jsonify, render_template,
+from flask import (Flask, abort, jsonify, render_template,
                    request, send_from_directory)
 
 import models
@@ -15,7 +14,12 @@ app = Flask(__name__)
 
 @app.errorhandler(404)
 def not_found(error):
-    return 'invalid database', 404
+    return 'Not Find', 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+    return 'Server error', 500
 
 
 @app.route('/favicon.ico')
@@ -65,7 +69,7 @@ def get_databases():
 @app.route('/datas/<string:tablename>', methods=['GET'])
 def get_database(tablename):
     if not hasattr(models, tablename):
-        return "table not find"
+        abort(404)
     table = getattr(models, tablename)
 
     start = request.args.get('start')
@@ -90,7 +94,7 @@ def get_database(tablename):
 
 
 def data_server():
-    app.run(host='0.0.0.0', debug=True, threaded=True)
+    app.run('0', debug=True, threaded=True)
 
 if __name__ == '__main__':
     app.run('0', debug=True, threaded=True)

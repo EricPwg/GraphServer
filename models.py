@@ -1,11 +1,9 @@
 import datetime
 import pony.orm as pny
 
-import config
+from config import DB_NAME
 
-database = pny.Database("sqlite",
-                        config.DB_NAME,
-                        create_db=True)
+database = pny.Database("sqlite", DB_NAME, create_db=True)
 
 
 class AtPressure(database.Entity):

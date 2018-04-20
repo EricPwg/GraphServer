@@ -69,6 +69,7 @@
 {% block page_script %}
 <!-- Page script -->
 <script>
+  var interactive_plot = null;
   $(function () {
   	let hash = window.location.hash.replace('#', '').split(',');
   	if(hash[0]){
@@ -91,36 +92,22 @@
     // be fetched from a server
     var data = [], totalPoints = 100
 
-    function getRandomData() {
-
-      if (data.length > 0)
-        data = data.slice(1)
-
-      // Do a random walk
-      while (data.length < totalPoints) {
-
-        var prev = data.length > 0 ? data[data.length - 1] : 50,
-            y    = prev + Math.random() * 10 - 5
-
-        if (y < 0) {
-          y = 0
-        } else if (y > 100) {
-          y = 100
-        }
-
-        data.push(y)
+  function getData(place, sensor, callback) {
+    $.ajax({
+      'url': '/datas/' + sensor,
+    }).done((data) => {
+      if(callback && data && data[sensor]) {
+	let res = [];
+	data[sensor].forEach((record, idx) => {
+          res.push([idx, record[1]]);
+	});
+        callback(res);
       }
+    })
+  }
 
-      // Zip the generated y values with the x values
-      var res = []
-      for (var i = 0; i < data.length; ++i) {
-        res.push([i, data[i]])
-      }
 
-      return res
-    }
-
-    var interactive_plot = $.plot('#interactive', [getRandomData()], {
+    interactive_plot = $.plot('#interactive', [getRandomData()], {
       grid  : {
         borderColor: '#f3f3f3',
         borderWidth: 1,
@@ -136,7 +123,7 @@
       },
       yaxis : {
         min : 0,
-        max : 200,
+        max : 800,
         show: true
       },
       xaxis : {
@@ -158,7 +145,7 @@
 
     //INITIALIZE REALTIME DATA FETCHING
     if (realtime === 'on') {
-      update()
+      //update()
     }
     //REALTIME TOGGLE
     $('#realtime .btn').click(function () {
@@ -170,6 +157,14 @@
       }
       update()
     })
+  function upp() {
+    getData($('#place').val(), $('#sensor').val(), (data) => {
+      interactive_plot.setData([data]);
+      interactive_plot.draw()
+      setTimeout(upp, 1000);
+    });
+  }
+  upp();
 	});
 </script>
 {% endblock %}

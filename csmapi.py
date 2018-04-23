@@ -1,82 +1,163 @@
-import requests
+import requests, threading
+
+from functools import wraps
+
+session_pool = {}
 
 class CSMError(Exception):
     pass
 
+def session_wrapper(func):
+
+    @wraps(func)
+    def wrap(interface, *args, **kwargs):
+        global session_pool
+        t_id = threading.get_ident()
+        if t_id in (session_pool):
+            session = session_pool.get(t_id)
+        else:
+            session = requests.Session()
+            session_pool[t_id] = session
+
+        if not interface.host:
+            raise CSMError('no host given')
+
+        if interface.session:
+            result = func(interface, *args, **kwargs)
+        else:
+            interface.session = session
+
+            try:
+                result = func(interface, *args, **kwargs)
+            except Exception as e:
+                if interface.session:
+                    interface.session = None
+
+                raise e
+
+            interface.session = None
+
+        return result
+
+    return wrap
+
+
 class CSMAPI():
+    def __init__(self, host):
+        self.TIMEOUT = 10
+        self.host = host
+        self.session = None
 
-    IoTtalk = requests.Session()
-    IoTtalk.keep_alive = False
-
-    def __init__(self, ENDPOINT=None, TIMEOUT=20):
-        self.ENDPOINT = ENDPOINT
-        self.TIMEOUT = TIMEOUT    
-
-    def register(self, mac_addr, profile, UsingSession=IoTtalk):
-        r = UsingSession.post(
-            self.ENDPOINT + '/' + mac_addr,
-            json={'profile': profile}, timeout=self.TIMEOUT
+    @session_wrapper
+    def register(self, mac_addr, profile):
+        url = '{host}/{mac_addr}'.format(
+            host=self.host,
+            mac_addr=mac_addr
         )
-        if r.status_code != 200: 
-            r.close()
-            raise CSMError(r.text)
-        r.close()
-        return True
-
-
-    def deregister(self, mac_addr, UsingSession=IoTtalk):
-        r = UsingSession.delete(self.ENDPOINT + '/' + mac_addr, timeout=self.TIMEOUT)
-        if r.status_code != 200: 
-            r.close()
-            raise CSMError(r.text)
-        r.close()
-        return True
-
-
-    def push(self, mac_addr, df_name, data, UsingSession=IoTtalk):
-        r = UsingSession.put(
-            self.ENDPOINT + '/' + mac_addr + '/' + df_name,
-            json={'data': data}, timeout=self.TIMEOUT,
-            headers={'Connection': 'close'}
+        response = self.session.post(
+            url,
+            json={'profile': profile},
+            timeout=self.TIMEOUT
         )
-        if r.status_code != 200: 
-            r.close()
-            raise CSMError(r.text)
-        r.close()
+
+        response.close()
+        if response.status_code != 200:
+            raise CSMError(response.text)
+
         return True
 
+    @session_wrapper
+    def deregister(self, mac_addr):
+        url = '{host}/{mac_addr}'.format(
+            host=self.host,
+            mac_addr=mac_addr
+        )
+        response = self.session.delete(url)
 
-    def pull(self, mac_addr, df_name, UsingSession=IoTtalk):
-        r = UsingSession.get(self.ENDPOINT + '/' + mac_addr + '/' + df_name, timeout=self.TIMEOUT, headers={'Connection': 'close'})
-        if r.status_code != 200: 
-            r.close()
-            raise CSMError(r.text)
-        r.close()
-        return r.json()['samples']
+        response.close()
+        if response.status_code != 200:
+            raise CSMError(response.text)
 
-
-    def get_alias(self, mac_addr, df_name, UsingSession=IoTtalk):
-        r = UsingSession.get(self.ENDPOINT + '/get_alias/' + mac_addr + '/' + df_name, timeout=self.TIMEOUT)
-        if r.status_code != 200: 
-            r.close()
-            raise CSMError(r.text)
-        r.close()
-        return r.json()['alias_name']
-
-
-    def set_alias(self, mac_addr, df_name, s, UsingSession=IoTtalk):
-        r = UsingSession.get(self.ENDPOINT + '/set_alias/' + mac_addr + '/' + df_name + '/alias?name=' + s, timeout=self.TIMEOUT)
-        if r.status_code != 200: 
-            r.close()
-            raise CSMError(r.text)
-        r.close()
         return True
 
+    @session_wrapper
+    def push(self, mac_addr, df_name, data):
+        url = '{host}/{mac_addr}/{df_name}'.format(
+            host=self.host,
+            mac_addr=mac_addr,
+            df_name=df_name
+        )
+        response = self.session.put(
+            url,
+            json={'data': data},
+            timeout=self.TIMEOUT
+        )
 
-    def tree(self, UsingSession=IoTtalk):
-        r = UsingSession.get(self.ENDPOINT + '/tree')
-        if r.status_code != 200: 
-            r.close()
-            raise CSMError(r.text)
-        r.close()
-        return r.json()
+        response.close()
+        if response.status_code != 200:
+            raise CSMError(response.text)
+
+        return True
+
+    @session_wrapper
+    def pull(self, mac_addr, df_name):
+        url = '{host}/{mac_addr}/{df_name}'.format(
+            host=self.host,
+            mac_addr=mac_addr,
+            df_name=df_name
+        )
+        response = self.session.get(
+            url,
+            timeout=self.TIMEOUT
+        )
+
+        response.close()
+        if response.status_code != 200:
+            raise CSMError(response.text)
+
+        return response.json()['samples']
+
+    @session_wrapper
+    def get_alias(self, mac_addr, df_name):
+        url = '{host}/get_alias/{mac_addr}/{df_name}'.format(
+            host=self.host,
+            mac_addr=mac_addr,
+            df_name=df_name
+        )
+        response = self.session.get(
+            url,
+            timeout=self.TIMEOUT)
+
+        response.close()
+        if response.status_code != 200:
+            raise CSMError(response.text)
+
+        return response.json()['alias_name']
+
+    @session_wrapper
+    def set_alias(self, mac_addr, df_name, new_alias):
+        url = '{host}/set_alias/{mac_addr}/{df_name}/alias?name={new_alias}'.format(
+            host=self.host,
+            mac_addr=mac_addr,
+            df_name=df_name,
+            new_alias=new_alias
+        )
+        response = self.session.get(
+            url,
+            timeout=self.TIMEOUT)
+
+        response.close()
+        if response.status_code != 200:
+            raise CSMError(response.text)
+        return True
+
+    @session_wrapper
+    def tree(self):
+        url = '{host}/tree'.format(host=self.host)
+        response = self.session.get(url)
+
+        response.close()
+        if response.status_code != 200:
+            raise CSMError(response.text)
+
+        return response.json()

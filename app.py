@@ -39,8 +39,8 @@ def history():
     return render_template('history.html')
 
 
-@app.route('/datas', methods=['GET'])
-def get_databases():
+@app.route('/datas/<string:field>', methods=['GET'])
+def get_databases(field):
     res = {}
 
     start = request.args.get('start')
@@ -55,9 +55,9 @@ def get_databases():
         table = models.database.entities.get(tablename)
         with pny.db_session:
             if start and end:
-                query = table.select(lambda row: row.timestamp >= start and row.timestamp <= end)
+                query = table.select(lambda row: row.timestamp >= start and row.timestamp <= end and row.field == field)
             else:
-                query = table.select()
+                query = table.select(lambda row: row.field == field)
 
             query = query.order_by(pny.desc(table.timestamp)).limit(limit)
 
@@ -66,8 +66,8 @@ def get_databases():
     return jsonify(res)
 
 
-@app.route('/datas/<string:tablename>', methods=['GET'])
-def get_database(tablename):
+@app.route('/datas/<string:field>/<string:tablename>', methods=['GET'])
+def get_database(field, tablename):
     if not hasattr(models, tablename):
         abort(404)
     table = getattr(models, tablename)
@@ -82,9 +82,9 @@ def get_database(tablename):
 
     with pny.db_session:
         if start and end:
-            query = table.select(lambda row: row.timestamp >= start and row.timestamp <= end)
+            query = table.select(lambda row: row.timestamp >= start and row.timestamp <= end and row.field == field)
         else:
-            query = table.select()
+            query = table.select(lambda row: row.field == field)
 
         query = query.order_by(pny.desc(table.timestamp)).limit(limit)
 

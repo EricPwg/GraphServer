@@ -85,13 +85,14 @@
     }
 
     function update() {
+      let field = $('.active').attr('id').replace('tab_', '');
       let ajax_obj = $.ajax({
-        url: '/datas?limit=1',
+        url: '/datas/' + field +'?limit=1',
         type:'GET'
       }).done(function(data){
         for(key in data) {
           if(data[key][0]) {
-            $('#bao3_' + key).text(data[key][0][1]);
+            $('#' + field + '_' + key).text(data[key][0][1]);
           }
         }
       });

@@ -116,10 +116,10 @@
 
     function getData(place, sensor, callback) {
       $.ajax({
-        'url': '/datas/' + sensor,
+        'url': '/datas/' + place + '/' + sensor,
       }).done((data) => {
         if(callback && data && data[sensor]) {
-          callback(data[sensor]);
+          callback(data[sensor].reverse());
         } else {
           callback([]);
         }
@@ -175,7 +175,7 @@
         interactive_plot.setData([res]);
         let y_max = (Math.round(min / (10 ** (Math.log10(max) - 1))) + 1) * (10 ** (Math.log10(max) - 1));
         let y_min = (Math.ceil(min / (10 ** (Math.log10(min) - 1))) - 1) * (10 ** (Math.log10(min) - 1));
-        console.log(x_tick);
+        //console.log(x_tick);
 
         interactive_plot.getOptions().yaxis.max = y_max;
         interactive_plot.getOptions().yaxis.min = y_min;

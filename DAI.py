@@ -49,7 +49,7 @@ def _run(profile, reg_addr, field):
             for df in dan.selected_DF:
                 data = dan.pull_with_timestamp(df)
                 if data:
-                    print(df, data)
+                    print(field, df, data)
                     timestamp = data[0]
                     value = float(data[1][0])
                     with pny.db_session:

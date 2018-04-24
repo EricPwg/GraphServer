@@ -85,13 +85,7 @@
       console.log(window.location.hash);
     })
 
-    /*
-     * Flot Interactive Chart
-     * -----------------------
-     */
-    // We use an inline data source in the example, usually data would
-    // be fetched from a server
-    interactive_plot = $.plot('#interactive', [], {
+    $.plot('#interactive', [], {
       grid  : {
         borderColor: '#f3f3f3',
         borderWidth: 1,
@@ -174,16 +168,49 @@
           }
         })
 
-        interactive_plot.setData([res]);
-        let y_max = (Math.round(min / (10 ** (Math.log10(max) - 1))) + 1) * (10 ** (Math.log10(max) - 1));
-        let y_min = (Math.ceil(min / (10 ** (Math.log10(min) - 1))) - 1) * (10 ** (Math.log10(min) - 1));
-        //console.log(x_tick);
+        let y_max_index = 10 ** (Math.log10(max) - 1);
+        if (!y_max_index) { y_max_index = 1;}
+        let y_max = (Math.ceil(max / y_max_index) + 1) * y_max_index;
 
-        interactive_plot.getOptions().yaxis.max = y_max;
-        interactive_plot.getOptions().yaxis.min = y_min;
-        interactive_plot.getOptions().xaxis.ticks = x_tick;
-        interactive_plot.setupGrid();
-        interactive_plot.draw();
+        let y_min_index = 10 ** (Math.log10(min) - 1);
+        if (!y_min_index) { y_min_index = 1;}
+        let y_min = (Math.round(min / y_min_index) - 1) * y_min_index;
+        console.log(y_max, y_min);
+
+        if (y_max == y_min) {
+          y_max += 10;
+          y_min -= 10;
+        }
+
+        if (y_min < 0) {
+          y_min = 0;
+        }
+
+        $.plot('#interactive', [res], {
+          grid  : {
+            borderColor: '#f3f3f3',
+            borderWidth: 1,
+            tickColor  : '#f3f3f3'
+          },
+          series: {
+            shadowSize: 0, // Drawing is faster without shadows
+            color     : '#3c8dbc'
+          },
+          lines : {
+            fill : true, //Converts the line chart to area chart
+            color: '#3c8dbc'
+          },
+          yaxis : {
+            min: y_min,
+            max: y_max,
+            show: true
+          },
+          xaxis : {
+            show: true,
+            ticks: x_tick,
+            tickColor: 'transparent'
+          }
+        });
         setTimeout(update, updateInterval);
       });
     }

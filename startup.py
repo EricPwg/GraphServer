@@ -1,6 +1,6 @@
 from threading import Thread
 
-# from app import data_server
+from app import main
 import DAI
 
 t_bao2 = Thread(target=DAI.bao2)
@@ -12,8 +12,4 @@ t_bao3.daemon = True
 t_bao2.start()
 t_bao3.start()
 
-try:
-    t_bao2.join()
-    t_bao3.join()
-except:
-    pass
+main()

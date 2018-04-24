@@ -93,8 +93,8 @@ def get_database(field, tablename):
     return jsonify(res)
 
 
-def data_server():
-    app.run('0', debug=True, threaded=True)
+def main():
+    app.run('0', debug=False, threaded=True)
 
 if __name__ == '__main__':
-    app.run('0', debug=True, threaded=True)
+    main()

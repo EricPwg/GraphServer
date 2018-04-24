@@ -78,7 +78,7 @@
 {% block page_script %}
 <!-- Page script -->
 <script>
-  $(function () {
+  $(() => {
     let hash = window.location.hash.replace('#', '');
     if($('#tab_' + hash).length){
       $('#tab_' + hash).find('a').click();
@@ -89,15 +89,16 @@
       let ajax_obj = $.ajax({
         url: '/datas/' + field +'?limit=1',
         type:'GET'
-      }).done(function(data){
+      }).done((data) => {
         for(key in data) {
           if(data[key][0]) {
             $('#' + field + '_' + key).text(data[key][0][1]);
           }
         }
+      }).always(() => {
+        setTimeout(update, 1000);
       });
 
-      setTimeout(update, 1000);
     }
 
     update(); 

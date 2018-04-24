@@ -85,6 +85,50 @@
       console.log(window.location.hash);
     })
 
+    var previousPoint = null, previousLabel = null, temp_data = null;
+ 
+    $.fn.UseTooltip = function () {
+      $(this).bind("plothover", function (event, pos, item) {
+        if (item) {
+          if ((previousLabel != item.series.label) || 
+             (previousPoint != item.dataIndex)) {
+            previousPoint = item.dataIndex;
+            previousLabel = item.series.label;
+            $("#tooltip").remove();
+ 
+            let idx = item.datapoint[0];
+            let value = item.datapoint[1];
+
+            let color = item.series.color;                        
+         
+            showTooltip(item.pageX,
+                        item.pageY,
+                        color,
+                        temp_data[idx][0] + "<br><strong>" + value + "</strong>");
+            }
+        } else {
+          $("#tooltip").remove();
+          previousPoint = null;
+        }
+      });
+    };
+ 
+    function showTooltip(x, y, color, contents) {
+      $('<div id="tooltip">' + contents + '</div>').css({
+        position: 'absolute',
+        display: 'none',
+        top: y - 10,
+        left: x + 10,
+        border: '2px solid ' + color,
+        padding: '3px',
+        'font-size': '9px',
+        'border-radius': '5px',
+        'background-color': '#fff',
+        'font-family': 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+        opacity: 0.9
+      }).appendTo("body").fadeIn(200);
+    }
+
     $.plot('#interactive', [], {
       grid  : {
         borderColor: '#f3f3f3',
@@ -107,6 +151,7 @@
         tickColor: 'transparent'
       }
     })
+    $('#interactive').UseTooltip();
 
     function getData(place, sensor, callback) {
       $.ajax({
@@ -149,6 +194,7 @@
       update()
     })*/
 
+
     function update() {
       getData($('#place').val(), $('#sensor').val(), (data) => {
         let res = [];
@@ -175,7 +221,6 @@
         let y_min_index = 10 ** (Math.log10(min) - 1);
         if (!y_min_index) { y_min_index = 1;}
         let y_min = (Math.round(min / y_min_index) - 1) * y_min_index;
-        console.log(y_max, y_min);
 
         if (y_max == y_min) {
           y_max += 10;
@@ -190,15 +235,19 @@
           grid  : {
             borderColor: '#f3f3f3',
             borderWidth: 1,
-            tickColor  : '#f3f3f3'
+            tickColor  : '#f3f3f3',
+            hoverable: true,
+            borderWidth: 2,
+            backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
           },
           series: {
             shadowSize: 0, // Drawing is faster without shadows
-            color     : '#3c8dbc'
-          },
-          lines : {
-            fill : true, //Converts the line chart to area chart
-            color: '#3c8dbc'
+            color     : '#3c8dbc',
+            lines : {
+              fill : true, //Converts the line chart to area chart
+              color: '#3c8dbc',
+              show: true
+            },
           },
           yaxis : {
             min: y_min,
@@ -211,6 +260,8 @@
             tickColor: 'transparent'
           }
         });
+        temp_data = data;
+
         setTimeout(update, updateInterval);
       });
     }

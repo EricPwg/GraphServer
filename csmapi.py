@@ -1,6 +1,9 @@
-import requests, threading
+import requests
+import threading
 
 from functools import wraps
+
+from config import REQUEST_TIMEOUT
 
 session_pool = {}
 
@@ -12,15 +15,16 @@ def session_wrapper(func):
     @wraps(func)
     def wrap(interface, *args, **kwargs):
         global session_pool
+
+        if not interface.host:
+            raise CSMError('no host given')
+
         t_id = threading.get_ident()
         if t_id in (session_pool):
             session = session_pool.get(t_id)
         else:
             session = requests.Session()
             session_pool[t_id] = session
-
-        if not interface.host:
-            raise CSMError('no host given')
 
         if interface.session:
             result = func(interface, *args, **kwargs)
@@ -44,7 +48,7 @@ def session_wrapper(func):
 
 class CSMAPI():
     def __init__(self, host):
-        self.TIMEOUT = 10
+        self.TIMEOUT = REQUEST_TIMEOUT
         self.host = host
         self.session = None
 

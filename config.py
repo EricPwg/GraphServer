@@ -1,3 +1,5 @@
 DB_NAME = "data.db"
 
 QUERY_LIMIT = 100
+
+REQUEST_TIMEOUT = 10

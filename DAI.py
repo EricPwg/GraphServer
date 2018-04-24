@@ -27,11 +27,13 @@ profile = {'dm_name': 'DataServer',
                        'PH4-O'],
            'is_sim': False}
 
+
 def bao2():
     reg_addr = 'Bao2_DataServer'
     _profile = profile.copy()
     _profile['d_name'] = 'Bao2_DataServer'
     _run(_profile, reg_addr, 'bao2')
+
 
 def bao3():
     reg_addr = 'Bao3_DataServer'
@@ -41,8 +43,8 @@ def bao3():
 
 
 def _run(profile, reg_addr, field):
-    dan = DAN(profile, host, reg_addr)
-    dan.device_registration_with_retry()
+    dan = DAN()
+    dan.device_registration_with_retry(profile, host, reg_addr)
     try:
         while True:
             # Pull data

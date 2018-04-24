@@ -12,5 +12,8 @@ t_bao3.daemon = True
 t_bao2.start()
 t_bao3.start()
 
-t_bao2.join()
-t_bao3.join()
+try:
+    t_bao2.join()
+    t_bao3.join()
+except:
+    pass

@@ -4,51 +4,38 @@ import pony.orm as pny
 from DAN import DAN
 import models
 
-host = 'farm.iottalk.tw'
+host = '140.113.199.199'
 
-profile = {'dm_name': 'DataServer',
-           'df_list': ['AtPressure-O',
-                       'CO2-O',
-                       'Temperature-O',
+profile = {'dm_name': 'DataServer_plant',
+           'df_list': [
+                       'CO2-O',                       
                        'Humidity-O',
-                       'WindSpeed-O',
-                       'RainMeter-O',
-                       'Bugs-O',
-                       'UV1-O',
-                       'UV2-O',
-                       'UV3-O',
-                       'Moisture1-O',
-                       'PH1-O',
-                       'Moisture2-O',
-                       'PH2-O',
-                       'Moisture3-O',
-                       'PH3-O',
-                       'Moisture4-O',
-                       'PH4-O'],
+					   'O2-O',
+					   'Temperature-O',
+                       'WatchingDog-O',
+                       'WaterLevel-O',
+                       ],
            'is_sim': False}
 
 
 def bao2():
     reg_addr = 'Bao2_DataServer'
     _profile = profile.copy()
-    _profile['d_name'] = 'Bao2_DataServer'
+    _profile['d_name'] = 'Bao2_DataServer_plantbox'
     _run(_profile, reg_addr, 'bao2')
 
-
-def bao3():
-    reg_addr = 'Bao3_DataServer'
-    _profile = profile.copy()
-    _profile['d_name'] = 'Bao3_DataServer'
-    _run(_profile, reg_addr, 'bao3')
 
 
 def _run(profile, reg_addr, field):
     dan = DAN()
     dan.device_registration_with_retry(profile, host, reg_addr)
+    dan.selected_DF = profile['df_list']
     try:
         while True:
             # Pull data
             for df in dan.selected_DF:
+            #for df in profile['df_list']:
+                #print (df)
                 data = dan.pull_with_timestamp(df)
                 if data:
                     print(field, df, data)

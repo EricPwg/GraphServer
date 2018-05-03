@@ -6,19 +6,7 @@ from config import DB_NAME
 database = pny.Database("sqlite", DB_NAME, create_db=True)
 
 
-class AtPressure(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
 class CO2(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class Temperature(database.Entity):
     timestamp = pny.PrimaryKey(datetime.datetime)
     field = pny.Required(str)
     value = pny.Required(float)
@@ -30,88 +18,30 @@ class Humidity(database.Entity):
     value = pny.Required(float)
 
 
-class WindSpeed(database.Entity):
+class O2(database.Entity):
     timestamp = pny.PrimaryKey(datetime.datetime)
     field = pny.Required(str)
     value = pny.Required(float)
 
 
-class RainMeter(database.Entity):
+class Temperature(database.Entity):
     timestamp = pny.PrimaryKey(datetime.datetime)
     field = pny.Required(str)
     value = pny.Required(float)
 
 
-class Bugs(database.Entity):
+class WatchingDog(database.Entity):
     timestamp = pny.PrimaryKey(datetime.datetime)
     field = pny.Required(str)
     value = pny.Required(float)
 
 
-class UV1(database.Entity):
+class WaterLevel(database.Entity):
     timestamp = pny.PrimaryKey(datetime.datetime)
     field = pny.Required(str)
     value = pny.Required(float)
 
 
-class UV2(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class UV3(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class Moisture1(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class PH1(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class Moisture2(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class PH2(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class Moisture3(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class PH3(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class Moisture4(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
-
-
-class PH4(database.Entity):
-    timestamp = pny.PrimaryKey(datetime.datetime)
-    field = pny.Required(str)
-    value = pny.Required(float)
 
 # turn on debug mode
 # pny.sql_debug(True)

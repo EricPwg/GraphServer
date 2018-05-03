@@ -1,6 +1,8 @@
 import random
 import threading
 import time
+import socket
+socket.getaddrinfo('localhost', 8080)
 
 from csmapi import CSMAPI
 # example
@@ -28,8 +30,8 @@ class DAN():
         self.mac_addr = mac_addr
 
         # for control channel
-        self.state = 'SUSPEND'
-        # self.state = 'RESUME'
+        #self.state = 'SUSPEND'
+        self.state = 'RESUME'
 
         self.selected_DF = set()
         self.pre_data_timestamp = {}
@@ -134,14 +136,14 @@ class DAN():
         if self.csmapi.register(self.mac_addr, self.profile):
             print ('This device has successfully registered.')
             print ('Device name = ' + self.profile['d_name'])
-
+            
             if self.control_channel_thread is None:
                 print ('Create control threading')
                 # for control channel
                 self.control_channel_thread = threading.Thread(target=self.control_channel)
                 self.control_channel_thread.daemon = True
                 self.control_channel_thread.start()
-
+            
             return True
         else:
             print ('Registration failed.')
@@ -160,7 +162,7 @@ class DAN():
             time.sleep(1)
 
     def pull(self, df_name):
-        if self.state == 'RESUME':
+        if 1 : #self.state == 'RESUME':
             data = self.csmapi.pull(self.mac_addr, df_name)
             if self.pre_data_timestamp.get(df_name) != data[0][0]:
                 self.pre_data_timestamp[df_name] = data[0][0]
@@ -171,18 +173,22 @@ class DAN():
         return None
 
     def pull_with_timestamp(self, df_name):
-        if self.state == 'RESUME':
+        #print (self.selected_DF)
+        if 1 :#self.state == 'RESUME':
             data = self.csmapi.pull(self.mac_addr, df_name)
-            if self.pre_data_timestamp.get(df_name) != data[0][0]:
-                self.pre_data_timestamp[df_name] = data[0][0]
+            #print ("data",data)
+            if data != None and data != []:
+        
+                if self.pre_data_timestamp.get(df_name) != data[0][0]:
+                    self.pre_data_timestamp[df_name] = data[0][0]
 
-                if data[0][1]:
-                    return (data[0][0], data[0][1])
+                    if data[0][1]:
+                        return (data[0][0], data[0][1])
 
         return None
 
     def push(self, df_name, *data):
-        if self.state == 'RESUME':
+        if 1 :#self.state == 'RESUME':
             return self.csmapi.push(self.mac_addr, df_name, list(data))
 
         return None

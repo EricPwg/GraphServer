@@ -23,24 +23,12 @@
 {% macro tab_content(place, is_active=False) -%}
     <div class="tab-pane{% if is_active %} active{% endif %}" id="{{place}}">
       <div class="row">
-        {{ content_box(place, 'AtPressure', '大氣壓力 (Pa)', 'ion-android-cloud', 'bg-aqua', 1023)}}
         {{ content_box(place, 'CO2', '二氧化碳 (ppm)', 'ion-android-car', 'bg-aqua', 300)}}
         {{ content_box(place, 'Temperature', '溫度 (℃)', 'ion-thermometer', 'bg-aqua', 24)}}
         {{ content_box(place, 'Humidity', '濕度 (%)', 'ion-waterdrop', 'bg-aqua', 47)}}
-        {{ content_box(place, 'WindSpeed', '風速 (m/s)', 'ion-paper-airplane', 'bg-aqua', 4.3)}}
-        {{ content_box(place, 'RainMeter', '雨量 (mm)', 'ion-ios-rainy', 'bg-aqua', 11)}}
-        {{ content_box(place, 'Bugs', '蟲數 (隻)', 'ion-bug', 'bg-green', 3)}}
-        {{ content_box(place, 'UV1', 'UV - 1', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ content_box(place, 'UV2', 'UV - 2', 'ion-android-sunny', 'bg-purple', 3)}}
-        {{ content_box(place, 'UV3', 'UV - 3', 'ion-android-sunny', 'bg-purple', 2)}}
-        {{ content_box(place, 'Moisture1', '土壤濕度 - A (%)', 'ion-waterdrop', 'bg-orange', 60)}}
-        {{ content_box(place, 'PH1', '土壤酸鹼 - A (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.7)}}
-        {{ content_box(place, 'Moisture2', '土壤濕度 - B (%)', 'ion-waterdrop', 'bg-orange', 57)}}
-        {{ content_box(place, 'PH2', '土壤酸鹼 - B (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 7.1)}}
-        {{ content_box(place, 'Moisture3', '土壤濕度 - C (%)', 'ion-waterdrop', 'bg-orange', 43)}}
-        {{ content_box(place, 'PH3', '土壤酸鹼 - C (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 5.9)}}
-        {{ content_box(place, 'Moisture4', '土壤濕度 - D (%)', 'ion-waterdrop', 'bg-orange', 62)}}
-        {{ content_box(place, 'PH4', '土壤酸鹼 - D (ph)', 'ion-erlenmeyer-flask-bubbles', 'bg-maroon', 6.3)}}
+        {{ content_box(place, 'O2', '氧氣 (ppm)', 'ion-paper-airplane', 'bg-aqua', 4.3)}}
+        {{ content_box(place, 'WaterLevel', '水量 (mm)', 'ion-ios-rainy', 'bg-aqua', 11)}}
+
       </div>
       <!-- /.row -->
     </div>

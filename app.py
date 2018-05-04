@@ -1,3 +1,4 @@
+import socket
 import os
 import pony.orm as pny
 
@@ -83,6 +84,7 @@ def get_database(field, tablename):
     with pny.db_session:
         if start and end:
             query = table.select(lambda row: row.timestamp >= start and row.timestamp <= end and row.field == field)
+
         else:
             query = table.select(lambda row: row.field == field)
 
@@ -94,7 +96,8 @@ def get_database(field, tablename):
 
 
 def main():
-    app.run('0', debug=True, threaded=True)
+    socket.getaddrinfo('127.0.0.1', 8080)
+    app.run('127.0.0.1', debug=True, threaded=True)
 
 if __name__ == '__main__':
     main()

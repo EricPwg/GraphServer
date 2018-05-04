@@ -1,5 +1,6 @@
 import requests
 import threading
+import thread
 
 from functools import wraps
 
@@ -19,7 +20,7 @@ def session_wrapper(func):
         if not interface.host:
             raise CSMError('no host given')
 
-        t_id = threading.get_ident()
+        t_id = thread.get_ident()
         if t_id in (session_pool):
             session = session_pool.get(t_id)
         else:

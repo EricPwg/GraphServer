@@ -155,10 +155,12 @@ class DAN():
             try:
                 if self.register_device(profile, host, mac_addr):
                     break
+            
             except Exception as e:
                 # TODO: check error
                 print ('Attach failed: '),
                 print (e)
+            
             time.sleep(1)
 
     def pull(self, df_name):

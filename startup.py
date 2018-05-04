@@ -11,4 +11,6 @@ t_bao2.daemon = True
 
 t_bao2.start()
 
+#DAI.bao2()
+
 main()
